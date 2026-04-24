@@ -4,6 +4,10 @@ class Backtester:
         self.strategy = strategy
         self.cash = initial_cash
         self.position = 0
+        # Track completed trades (buy → sell pairs)
+        self.completed_trades = []
+        # Track last buy price
+        self.last_buy_price = None
 
         # NEW: store all trades
         self.trades = []
@@ -17,6 +21,8 @@ class Backtester:
             if signal == 1 and self.cash >= price:
                 self.position += 1
                 self.cash -= price
+
+                self.last_buy_price = price # remember buy price for profit calculation
 
                 # LOG TRADE
                 self.trades.append({
