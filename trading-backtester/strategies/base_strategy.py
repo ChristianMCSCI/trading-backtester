@@ -13,4 +13,4 @@ class Strategy:
         - 0  -> HOLD
         """
         # This forces child classes to implement their own logic
-        raise NotImplementedError
+        raise NotImplementedError("Must implement generate_signal method")
