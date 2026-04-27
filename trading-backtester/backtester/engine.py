@@ -9,8 +9,8 @@ class Backtester:
 
         # Risk management
         self.buy_price = None
-        self.stop_loss_pct = 0.995   # -0.5%
-        self.take_profit_pct = 1.01  # +1%
+        self.stop_loss_pct = 0.995 
+        self.take_profit_pct = 1.01  
 
     def run(self):
         for i in range(len(self.data)):
