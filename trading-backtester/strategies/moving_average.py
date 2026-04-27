@@ -13,8 +13,8 @@ class MovingAverageStrategy:
         if index < self.trend_window:
             return 0
 
-        # Cooldown (prevents overtrading)
-        if index - self.last_trade_index < 20:
+        # Cooldown
+        if index - self.last_trade_index < 15:
             return 0
 
         prices = data[:index+1]
@@ -25,19 +25,32 @@ class MovingAverageStrategy:
 
         price = prices[-1]
 
-        # 🕒 TIME FILTER (intraday only)
-        # NOTE: only works if you pass timestamps later (optional for now)
-        # timestamp = pd.to_datetime(data.index[index])
-        # hour = timestamp.hour
-        # if hour < 14 or hour > 19:
-        #     return 0
+        # 🔥 NEW: momentum (price change over last 5 bars)
+        momentum = (price - prices[-5]) / prices[-5]
 
-        # 🔥 STRONG TREND FILTER
+        # 🔥 NEW: pullback (price below short MA)
+        pullback = (short_ma - price) / short_ma
+
+        # =========================
+        # BUY (HIGH QUALITY ONLY)
+        # =========================
         if short_ma > long_ma and price > trend_ma:
-            if (short_ma - long_ma) / long_ma > 0.002:
-                self.last_trade_index = index
-                return 1
 
+            # Strong trend
+            if (short_ma - long_ma) / long_ma > 0.001:
+
+                # Pullback entry (not chasing)
+                if -0.002 < pullback < 0.03:
+
+                    # Momentum turning back up
+                    if momentum > -0.001:
+
+                        self.last_trade_index = index
+                        return 1
+
+        # =========================
+        # SELL
+        # =========================
         elif short_ma < long_ma and price < trend_ma:
             return -1
 

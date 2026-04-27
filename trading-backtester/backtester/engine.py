@@ -7,7 +7,7 @@ class Backtester:
         self.position = 0
         self.trades = []
 
-        # Risk management (intraday tuned)
+        # Risk management
         self.buy_price = None
         self.stop_loss_pct = 0.995   # -0.5%
         self.take_profit_pct = 1.01  # +1%
@@ -15,7 +15,27 @@ class Backtester:
     def run(self):
         for i in range(len(self.data)):
             price = self.data[i]
-            timestamp = str(self.timestamps[i])[:16]
+            timestamp_full = str(self.timestamps[i])
+            timestamp = timestamp_full[:16]
+
+            # =========================
+            # TIME HANDLING (UTC → EST)
+            # =========================
+            hour = int(timestamp_full[11:13])
+            minute = int(timestamp_full[14:16])
+            hour_est = hour - 4  # adjust if DST changes matter later
+
+            # =========================
+            # FORCE END-OF-DAY SELL (3:55 PM EST)
+            # =========================
+            if hour_est == 15 and minute >= 55 and self.position > 0:
+                self.cash += self.position * price
+                self.trades.append(
+                    f"[{timestamp}] END-OF-DAY SELL @ ${price:.2f} | Cash: ${self.cash:.2f}"
+                )
+                self.position = 0
+                self.buy_price = None
+                continue
 
             # =========================
             # RISK MANAGEMENT

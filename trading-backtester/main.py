@@ -9,7 +9,7 @@ def main():
     # =========================
     # USER INPUT
     # =========================
-    file_path = input("Enter data file (e.g., data/aapl.csv): ")
+    file_path = "data/qqq_march_2026_5m.csv"                         #input("Enter data file (e.g., data/aapl.csv): ")
     initial_cash = 1000
 
     # =========================
