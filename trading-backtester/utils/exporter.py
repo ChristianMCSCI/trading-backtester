@@ -18,10 +18,4 @@ def save_results(trades, metrics, filename="results.csv"):
 
         # Write trades
         for trade in trades:
-            writer.writerow([
-                trade["index"],
-                trade["type"],
-                trade["price"],
-                trade["cash"],
-                trade["position"]
-            ])
+             writer.writerow([trade])

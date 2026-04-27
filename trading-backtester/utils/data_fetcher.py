@@ -1,16 +1,22 @@
 import yfinance as yf
+import pandas as pd
 
-def fetch_data(ticker="AAPL", start="2022-01-01", end="2023-01-01", filename="data/aapl.csv"):
-    data = yf.download(ticker, start=start, end=end)
+def fetch_data(ticker, start, end, filename, interval="1d"):
+    data = yf.download(
+        ticker,
+        start=start,
+        end=end,
+        interval=interval,
+        progress=False
+    )
 
     if data.empty:
-        print("ERROR: No data downloaded.")
+        print("❌ No data fetched.")
         return
 
-    # 🔥 Flatten multi-index columns (THIS FIXES YOUR ISSUE)
-    if hasattr(data.columns, "levels"):
+    # Flatten columns if needed (yfinance sometimes returns multi-index)
+    if isinstance(data.columns, pd.MultiIndex):
         data.columns = data.columns.get_level_values(0)
 
     data.to_csv(filename)
-
-    print(f"Data saved to {filename} ({len(data)} rows)")
+    print(f"✅ Data saved to {filename} ({len(data)} rows)")
